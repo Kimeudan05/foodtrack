@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+instance/
+virtual_env/
+__pypackages__/
+
+# Editor
+.vscode/
+.DS_Store
+
+# Optional for deployment
+*.sqlite3
+*.log
