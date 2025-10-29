@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">
+        {% if week_mode %}
+        Weekly Summary ({{ start_of_week.strftime('%b %d') }} – {{ end_of_week.strftime('%b %d, %Y') }})
+        {% else %}
+        Meals for {{ selected_date.strftime('%A, %B %d, %Y') }}
+        {% endif %}
+    </h3>
+
+    <div>
+        <a href="{{ url_for('main.dashboard') }}"
+            class="btn btn-sm {% if not week_mode %}btn-primary{% else %}btn-outline-primary{% endif %}">Daily</a>
+        <a href="{{ url_for('main.dashboard', week=1) }}"
+            class="btn btn-sm {% if week_mode %}btn-primary{% else %}btn-outline-primary{% endif %}">Weekly</a>
+    </div>
+</div>
+
+{% if not week_mode %}
+<!-- 🔹 Daily View -->
+<form method="GET" action="{{ url_for('main.dashboard') }}" class="d-flex align-items-center mb-3">
+    <input type="date" name="date" class="form-control me-2" value="{{ selected_date }}">
+    <button type="submit" class="btn btn-outline-primary btn-sm">View</button>
+</form>
+
+{% if missing_meals %}
+<div class="alert alert-warning shadow-sm">
+    <strong>Reminder :</strong> You haven't logged {{ missing_meals|join(', ')|capitalize }} yet today
+    <a href="{{ url_for('main.add_meal') }}" class="alert-link">Add now →</a>
+    <button type="button" class="btn-close ms-3" data-bs-dismiss="alert"></button>
+</div>
+{% else %}
+<div class="alert alert-success shadow-sm alert-dismissible fade show" role="alert">
+    You have recorded all meals for today. (You can add any snack you had) <br> <strong class="fst-italic fs-5">You have
+        till midnight to edit if you made a mistake</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+{% if meals %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Meal Type</th>
+                <th>Description</th>
+                <th>Cost (Ksh)</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meal in meals %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ meal.meal_type }}</td>
+                <td>{{ meal.description }}</td>
+                <td>{{ "%.2f"|format(meal.cost) }}</td>
+                <td>{{ meal.date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    {% if meal.date == now().date() %}
+                    <a href="{{ url_for('main.edit_meal', meal_id=meal.id) }}"
+                        class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <form method="POST" action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Delete this meal?');">Delete</button>
+                    </form>
+                    {% else %}
+                    <span class="text-muted">Locked</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <div class="flex jsutify-content-end mb-3">
+            <p class="fst-italic d-inline text-primary"> Get all your meals here</p>
+            <a href="{{url_for('main.export_csv')}}" class="btn btn-success btn-sm">
+                <i class="bi bi-download"></i> Export as CSV
+            </a>
+        </div>
+    </table>
+</div>
+
+<div class="card bg-light p-3 mt-3 shadow-sm">
+    <h5 class="mb-0">Total Spent: <span class="fw-bold text-success">Ksh {{ "%.2f"|format(total) }}</span></h5>
+</div>
+{% else %}
+<div class="text-center">
+    No meals recorded for this date.
+    <a href="{{ url_for('main.add_meal') }}" class="alert-link">Add one now!</a>
+</div>
+{% endif %}
+
+{% else %}
+<!-- 🔹 Weekly View -->
+{% if meals %}
+{% for day, items in meals|groupby('date') %}
+<h5 class="mt-4 text-primary">{{ day.strftime('%A, %b %d') }}</h5>
+<ul class="list-group mb-2">
+    {% for meal in items %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ meal.meal_type }} — {{ meal.description }}</span>
+        <span class="fw-bold">Ksh {{ "%.2f"|format(meal.cost) }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endfor %}
+
+<div class="card bg-light p-3 mt-4 shadow-sm">
+    <h5 class="mb-1">Weekly Total: <span class="fw-bold text-success">Ksh {{ "%.2f"|format(total_spent) }}</span></h5>
+    <ul class="list-unstyled mb-0">
+        {% for d, amt in totals_by_day %}
+        <li>{{ d.strftime('%a %d') }} — <strong>Ksh {{ "%.2f"|format(amt) }}</strong></li>
+        {% endfor %}
+    </ul>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    No meals recorded for this week.
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

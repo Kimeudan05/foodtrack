@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-4 text-center">
+                    {% if edit %}
+                    Edit Meal
+                    {% else %}
+                    Add Meal
+                    {% endif %}
+                </h4>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.meal_type.label(class="form-label") }}
+                        {{ form.meal_type(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", placeholder="e.g. Ugali + Sukuma + Beef") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.cost.label(class="form-label") }}
+                        {{ form.cost(class="form-control", placeholder="e.g. 150") }}
+                    </div>
+                    <div class="d-grid">
+                        {% if edit %}
+                        {{ form.submit(class="btn btn-success", value="Update Meal") }}
+                        {% else %}
+                        {{ form.submit(class="btn btn-primary", value="Add Meal") }}
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">Reports — {{ 'Weekly' if view == 'week' else 'Monthly' }}</h3>
+    <div>
+        <a href="{{ url_for('main.reports', view='week') }}"
+            class="btn btn-outline-primary btn-sm {% if view=='week' %}active{% endif %}">This Week</a>
+        <a href="{{ url_for('main.reports', view='month') }}"
+            class="btn btn-outline-secondary btn-sm {% if view=='month' %}active{% endif %}">This Month</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h5>Total Spent: <span class="fw-bold text-success">Ksh {{ "%.2f"|format(total_spent) }}</span></h5>
+            <h6>Average Per Day: <span class="fw-bold">{{ "%.2f"|format(avg_spent) }}</span></h6>
+        </div>
+    </div>
+    <div class="col-md-6 mt-3">
+        <div class="card p-3 shadow-sm">
+            <h6>
+                Highest Spend:
+                <span class="fw-bold text-danger">
+                    {{ max_day }} (Ksh {{ "%.2f"|format(max_value) }})
+                </span>
+            </h6>
+            <h6>
+                Lowest Spend:
+                <span class="fw-bold text-success">
+                    {{ min_day }} (Ksh {{ "%.2f"|format(min_value) }})
+                </span>
+            </h6>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="card p-4 shadow-sm mb-4">
+    <h5 class="mb-3">Spending Trend</h5>
+    <canvas id="spendingChart"></canvas>
+</div>
+
+{% if meals %}
+<table class="table table-sm table-hover mt-3">
+    <thead class="table-light">
+        <tr>
+            <th>Date</th>
+            <th>Meals Count</th>
+            <th>Total (Ksh)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d, amt in totals_by_day %}
+        <tr>
+            <td>{{ d.strftime('%b %d, %Y') }}</td>
+            <td>{{ meals|selectattr('date', 'equalto', d)|list|length }}</td>
+            <td>{{ "%.2f"|format(amt) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+{% else %}
+<div class="alert alert-info text-center">No meals logged in this period.</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = {{ labels| tojson }};
+    const values = {{ values| tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
