@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold mb-2 mb-md-0">
         {% if week_mode %}
         Weekly Summary ({{ start_of_week.strftime('%b %d') }} – {{ end_of_week.strftime('%b %d, %Y') }})
         {% else %}
@@ -12,7 +12,7 @@
 
     <div>
         <a href="{{ url_for('main.dashboard') }}"
-            class="btn btn-sm {% if not week_mode %}btn-primary{% else %}btn-outline-primary{% endif %}">Daily</a>
+            class="btn btn-sm {% if not week_mode %}btn-primary{% else %}btn-outline-primary {% endif %} me-2">Daily</a>
         <a href="{{ url_for('main.dashboard', week=1) }}"
             class="btn btn-sm {% if week_mode %}btn-primary{% else %}btn-outline-primary{% endif %}">Weekly</a>
     </div>
@@ -26,13 +26,13 @@
 </form>
 
 {% if missing_meals %}
-<div class="alert alert-warning shadow-sm">
+<div class="text-primary  mb-3 p-3 border rounded shadow-sm">
     <strong>Reminder :</strong> You haven't logged {{ missing_meals|join(', ')|capitalize }} yet today
-    <a href="{{ url_for('main.add_meal') }}" class="alert-link">Add now →</a>
-    <button type="button" class="btn-close ms-3" data-bs-dismiss="alert"></button>
+    <a href="{{ url_for('main.add_meal') }}" class="alert-link text-info">Add now →</a>
+
 </div>
 {% else %}
-<div class="alert alert-success shadow-sm alert-dismissible fade show" role="alert">
+<div class="alert-success shadow-sm alert-dismissible fade show" role="alert">
     You have recorded all meals for today. (You can add any snack you had) <br> <strong class="fst-italic fs-5">You have
         till midnight to edit if you made a mistake</strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
