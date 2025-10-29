@@ -2,7 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const ctx = document.getElementById("spendingChart");
 
   if (ctx && typeof Chart !== "undefined") {
-    new Chart(ctx, {
+    // check if a Chart instance already exists on this canvas
+    if (ctx.chart) {
+      ctx.chart.destroy(); // destroy the existing chart instance
+    }
+    ctx.chart = new Chart(ctx, {
       type: "line",
       data: {
         labels: labels,

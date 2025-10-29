@@ -9,3 +9,48 @@ body {
 .alert {
   border-radius: 8px;
 }
+@media (max-width: 576px) {
+  /* Smaller font for table on extra small devices */
+  table.table {
+    font-size: 0.85rem;
+  }
+
+  /* Hide the Date column */
+  table.table thead th:nth-child(5),
+  table.table tbody td:nth-child(5) {
+    display: none;
+  }
+
+  /* Stack the daily/weekly buttons below the heading */
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .d-flex.justify-content-between > div {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  .d-flex.justify-content-between > div .btn {
+    width: 48%;
+    margin-right: 4%;
+  }
+  .d-flex.justify-content-between > div .btn:last-child {
+    margin-right: 0;
+  }
+
+  /* Stack date picker and view button vertically */
+  form.d-flex.align-items-center.mb-3 {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  form.d-flex.align-items-center.mb-3 input[type="date"],
+  form.d-flex.align-items-center.mb-3 button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Make alerts font smaller */
+  .alert {
+    font-size: 0.9rem;
+  }
+}
