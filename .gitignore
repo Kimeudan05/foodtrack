@@ -17,3 +17,4 @@ __pypackages__/
 # Optional for deployment
 *.sqlite3
 *.log
+.vercel

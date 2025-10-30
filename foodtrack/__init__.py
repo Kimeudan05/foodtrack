@@ -17,9 +17,7 @@ def create_app():
 
     # configurations
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback_secrete")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL", "sqlite:///foodtrack.db"
-    )
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # email configurations
