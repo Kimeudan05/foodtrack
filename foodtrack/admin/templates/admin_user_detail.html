@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">
+        {{ user.username }} — Meal History
+    </h3>
+    <div>
+        <a href="{{ url_for('admin.export_user_meals', user_id=user.id) }}" class="btn btn-outline-success btn-sm me-2">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+
+
+<div class="row text-center mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>Total Meals</h6>
+            <h3>{{ total_meals }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>Total Spent</h6>
+            <h3 class="text-success">Ksh {{ "%.2f"|format(total_spent) }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>Average Per Meal</h6>
+            <h3>{{ "%.2f"|format(total_spent / total_meals if total_meals else 0) }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4 mb-4 shadow-sm">
+    <h5 class="mb-3">Spending Trend</h5>
+    {% if labels %}
+    <canvas id="userChart"></canvas>
+    {% else %}
+    <p class="text-muted text-center">No data available for chart.</p>
+    {% endif %}
+</div>
+
+<div class="card p-3 shadow-sm">
+    <h5 class="mb-3">Meal Records</h5>
+    {% if meals %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Meal Type</th>
+                    <th>Description</th>
+                    <th>Cost (Ksh)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meal in meals %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ meal.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ meal.meal_type }}</td>
+                    <td>{{ meal.description }}</td>
+                    <td>{{ "%.2f"|format(meal.cost) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        No meals logged yet for this user.
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById("userChart");
+    if (ctx && typeof Chart !== "undefined") {
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: {{ labels| tojson }},
+    datasets: [{
+        label: "Daily Spend (Ksh)",
+        data: {{ values| tojson }},
+        borderColor: "#0d6efd",
+        backgroundColor: "rgba(13, 110, 253, 0.1)",
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 5,
+        pointBackgroundColor: "#0d6efd"
+      }]
+    },
+    options: {
+        responsive: true,
+            scales: {
+            y: { beginAtZero: true }
+        }
+    }
+  });
+}
+</script>
+
+{% endblock %}

@@ -62,3 +62,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// Navbar toggler icon change and click outside to close
+document.addEventListener("DOMContentLoaded", function () {
+  const toggler = document.querySelector(".navbar-toggler");
+  const navbarCollapse = document.getElementById("navbarNav");
+  const togglerIcon = toggler.querySelector(".navbar-toggler-icon");
+  const closeIcon = toggler.querySelector(".close-icon");
+
+  // Toggle between hamburger and X
+  navbarCollapse.addEventListener("show.bs.collapse", () => {
+    togglerIcon.classList.add("d-none");
+    closeIcon.classList.remove("d-none");
+  });
+
+  navbarCollapse.addEventListener("hide.bs.collapse", () => {
+    togglerIcon.classList.remove("d-none");
+    closeIcon.classList.add("d-none");
+  });
+
+  // Close navbar when clicking outside
+  document.addEventListener("click", (event) => {
+    const isClickInside =
+      toggler.contains(event.target) || navbarCollapse.contains(event.target);
+    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+
+    if (!isClickInside && navbarCollapse.classList.contains("show")) {
+      bsCollapse.hide();
+    }
+  });
+});

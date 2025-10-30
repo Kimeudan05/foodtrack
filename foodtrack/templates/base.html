@@ -48,10 +48,15 @@
                 🍽 FoodTrack
             </a>
 
-            <!-- Navbar toggler (hamburger icon) -->
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-sm btn-warning">Admin</a>
+            {% endif %}
+
+            <!-- Navbar toggler -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
+                <span class="close-icon d-none"><i class="bi bi-x-lg"></i></span>
             </button>
 
             <!-- Navbar links -->
@@ -91,6 +96,7 @@
             </div>
         </div>
     </nav>
+
 
     <!-- Page Content -->
     <div class="container mt-5 pt-4 mb-5">

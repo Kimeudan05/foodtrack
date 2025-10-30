@@ -4,12 +4,20 @@ from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 import os
 from dotenv import load_dotenv
+from flask_migrate import Migrate
+
+# logic for main routes
+import logging
+from logging.handlers import RotatingFileHandler
+import os
 
 load_dotenv()  # read the .env file
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+# migrate instance
+migrate = Migrate()
 
 
 def create_app():
@@ -31,18 +39,37 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    # enable migrations
+    migrate.init_app(app, db)
 
     # configure login manager (where to redirect for login)
     login_manager.login_view = "main.login"
 
     from foodtrack.routes import main
+    from foodtrack.admin import admin_bp
 
     # register blueprints
     app.register_blueprint(main)
-
+    app.register_blueprint(admin_bp)
     # create database tables
     with app.app_context():
         db.create_all()
+
+    # logging setup
+    if not os.path.exists("logs"):
+        os.mkdir("logs")
+    file_handler = RotatingFileHandler(
+        "logs/foodtrack.log", maxBytes=10240, backupCount=10
+    )
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+        )
+    )
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info("FoodTrack startup")
 
     # return the app instance
     return app
